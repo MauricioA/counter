@@ -45,7 +45,7 @@ from datetime import datetime
 # file: year-month-day.key
 # formato: hour, minute, keys, total.clicks, left.clicks, right.clicks, middle.clicks
 
-keys = 12 + 1
+keys = 0 + 1
 	
 lastDate = datetime.now()
 left = right = middle = 0

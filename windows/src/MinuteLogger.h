@@ -12,7 +12,7 @@ enum {
 	WHEEL_SCROLL,
 };
 
-const int INITIAL_KEYS = 7;
+const int INITIAL_KEYS = 0;
 
 class MinuteLogger {
 	public:
