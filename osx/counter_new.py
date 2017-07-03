@@ -1,11 +1,6 @@
 #! /usr/bin/python
 
-# OSX only!
-# Terminal needs to be added to privacy in OSX to register keys!
-
 # TODO exit doesn't work
-# TODO test middle button with mouse
-# TODO capture special keys (brightness, etc) + caps lock
 
 # To debug: copy script and set debug
 debug = False
@@ -13,6 +8,12 @@ if debug:
 	ruta = "/Users/malfonso/test/counter/debug/"
 else:
 	ruta = "/Users/malfonso/test/counter/keys/"
+
+# OSX only!
+# Terminal needs to be added to privacy in OSX to register keys!
+
+# TODO test middle button with mouse
+# TODO set backup to drive
 
 from Foundation import NSObject
 from AppKit import NSApplication, NSApp
@@ -41,11 +42,13 @@ from Cocoa import (
 from PyObjCTools import AppHelper
 import signal, sys, time
 from datetime import datetime
+# import config as cfg
 
 # file: year-month-day.key
 # formato: hour, minute, keys, total.clicks, left.clicks, right.clicks, middle.clicks
 
-keys = 0 + 1
+# TODO capture special keys (brightness, etc) + caps lock
+keys = 12 + 1
 	
 lastDate = datetime.now()
 left = right = middle = 0
@@ -96,7 +99,7 @@ def clear(exit=False):
 	if debug: print "writing"
 	global keys, left, right, middle, lastDate
 
-	archivo = open("%s%d-%02d-%02d.key" % 
+	archivo = open("%sosx_%d-%02d-%02d.key" % 
 		(ruta, lastDate.year, lastDate.month, lastDate.day), "a")
 	string = '%3d,%3d,%3d,%3d,%3d,%3d,%3d\n' % (lastDate.hour, lastDate.minute, 
 		keys, left+right+middle, left, right, middle)
@@ -128,6 +131,8 @@ def createAppDelegate():
 			return True
 
 		def applicationWillTerminate_(self, notification):
+			# if cfg.LOCK.is_locked():
+			#     cfg.LOCK.release()
 			if debug: print("Exiting")
 			clear(True)
 			return None
@@ -147,14 +152,18 @@ while try_again:
 		delegate = createAppDelegate().alloc().init()
 		NSApp().setDelegate_(delegate)
 		NSApp().setActivationPolicy_(NSApplicationActivationPolicyProhibited)
+		# workspace = NSWorkspace.sharedWorkspace()
 		def handler(signal, frame):
 			if debug: print "exit handler"
 			onExit(signal)
 			AppHelper.stopEventLoop()
+		# remove this if double exit
+		# signal.signal(signal.SIGINT, handler)
 		signal.signal(signal.SIGTERM, handler)
 		signal.signal(signal.SIGINT, handler)
 		signal.signal(signal.SIGHUP, handler)
 		signal.signal(signal.SIGABRT, handler)
+		# signal.signal(signal.SIGKILL, handler)
 		AppHelper.runEventLoop()
 		try_again = False
 	except Exception as e:
